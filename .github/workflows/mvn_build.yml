@@ -34,7 +34,7 @@ jobs:
           java --version
           javac --version
           chmod +x mvnw 
-          ./mvnw spring-boot:build-image -Dspring-boot.build-image.imageName=${REGISTRY}/${IMAGE_NAME}/feder-server:latest -e -X
+          ./mvnw spring-boot:build-image -Dspring-boot.build-image.imageName=${REGISTRY}/${IMAGE_NAME}:latest -e -X
 
       - name: 'Login to GitHub Container Registry'
         uses: docker/login-action@v1
@@ -44,4 +44,7 @@ jobs:
           password: ${{secrets.GITHUB_TOKEN}}
 
       - name: 'Push Image'
-        run: docker push ghcr.io/nikita-t1/feder-server:latest
+        run: |
+          docker image ls
+          docker images
+          docker push ghcr.io/nikita-t1/feder-server:latest
