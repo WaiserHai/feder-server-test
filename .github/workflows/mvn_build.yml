@@ -1,0 +1,47 @@
+name: Build New Release
+
+on: push
+
+env:
+  # Use docker.io for Docker Hub if empty
+  REGISTRY: ghcr.io
+  # github.repository as <account>/<repo>
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+
+  build-docker-release:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 'Checkout GitHub Action'
+        uses: actions/checkout@main
+
+      - name: 'Setup Java Environment'
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: 'Build Image'
+        env:
+          DB_USERNAME: ${{secrets.DB_USERNAME}}
+          DB_PASSWORD: ${{secrets.DB_PASSWORD}}
+          DB_URL: ${{secrets.DB_URL}}
+          JWT_SECRET: ${{secrets.JWT_SECRET}}
+        run: |
+          java --version
+          javac --version
+          chmod +x mvnw 
+          ./mvnw spring-boot:build-image -Dspring-boot.build-image.imageName=${REGISTRY}/${IMAGE_NAME}/feder-server:latest -e -X
+
+      - name: 'Login to GitHub Container Registry'
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{github.actor}}
+          password: ${{secrets.GITHUB_TOKEN}}
+
+      - name: 'Push Image'
+        run: docker push ghcr.io/nikita-t1/feder-server:latest
