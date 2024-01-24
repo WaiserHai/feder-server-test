@@ -28,7 +28,9 @@ public class AuthController {
     @PostMapping(value = {"/signup", "/register"})
     @ResponseStatus(HttpStatus.CREATED)
     public User register(@RequestBody Map<String, String> params) {
-        return userService.createUser(params);
+        return null;
+        //disabled for now
+//        return userService.createUser(params);
     }
 
 }
