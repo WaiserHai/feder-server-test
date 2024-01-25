@@ -46,22 +46,22 @@ jobs:
           username: ${{github.actor}}
           password: ${{secrets.GITHUB_TOKEN}}
 
-      - name: 'Tag Image as Main'
+      - name: 'Tag Image and Pus as Main'
         # check if branch name contains 'main' or 'master'
         if: ${{ startsWith(github.ref, 'refs/heads/main') || startsWith(github.ref, 'refs/heads/master') }}
         run: |
           docker tag ${REGISTRY}/${IMAGE_NAME}:latest ${REGISTRY}/${IMAGE_NAME}:main 
           docker tag ${REGISTRY}/${IMAGE_NAME}:latest ${REGISTRY}/${IMAGE_NAME}:main-${{ github.sha }}
+          docker push ${REGISTRY}/${IMAGE_NAME}:main
+          docker push ${REGISTRY}/${IMAGE_NAME}:main-${{ github.sha }}
+          docker push ${REGISTRY}/${IMAGE_NAME}:latest
 
-      - name: 'Tag Image as Dev'
+      - name: 'Tag Image and Push as Dev'
         # check if branch name does not contain 'main' or 'master'
         if: ${{ !startsWith(github.ref, 'refs/heads/main') && !startsWith(github.ref, 'refs/heads/master') }}
         run: |
           docker tag ${REGISTRY}/${IMAGE_NAME}:latest ${REGISTRY}/${IMAGE_NAME}:dev 
           docker tag ${REGISTRY}/${IMAGE_NAME}:latest ${REGISTRY}/${IMAGE_NAME}:dev-${{ github.sha }}
-
-      - name: 'Push Image'
-        run: |
-          docker image ls
-          docker images
+          docker push ${REGISTRY}/${IMAGE_NAME}:dev
+          docker push ${REGISTRY}/${IMAGE_NAME}:dev-${{ github.sha }}
           docker push ${REGISTRY}/${IMAGE_NAME}:latest
