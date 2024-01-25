@@ -1,6 +1,6 @@
 name: Build New Release
 
-on: push
+on: [push, release]
 
 env:
   # Use docker.io for Docker Hub if empty
@@ -68,7 +68,5 @@ jobs:
       - name: 'Push Image'
         run: |
           docker image ls
-          docker images
-          docker tag ${REGISTRY}/${IMAGE_NAME}:dev ${REGISTRY}/${IMAGE_NAME}:${{ steps.meta.outputs.tags }}
           docker images
           docker push ${REGISTRY}/${IMAGE_NAME}:dev
